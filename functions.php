@@ -8,17 +8,34 @@ require_once get_template_directory() . '/includes/models/cpt-categorie-articles
 require_once get_template_directory() . '/includes/models/cpt-footer.php'; // Custom Post Type Footer
 require_once get_template_directory() . '/includes/models/cpt-404.php'; // Custom Post Type 404
 
-// SUPPORTS
-add_action('after_setup_theme', function() { add_theme_support('post-thumbnails'); }); // Active les images mises en avant
-
 // MISE A JOUR
 if (is_admin()) require_once get_template_directory() . '/ocade-updater.php';
+
+// SUPPORTS
+add_action('after_setup_theme', function () {
+  add_theme_support('custom-logo'); // Active les logos personnalisés
+  add_theme_support('post-formats', ['aside', 'gallery', 'link', 'image', 'quote', 'status', 'video', 'audio', 'chat']); // Active les formats d'article
+  add_theme_support('automatic-feed-links'); // Active les liens de flux automatiques
+  add_theme_support('editor-style'); // Active les styles de l'éditeur
+  add_theme_support('post-thumbnails'); // Active les images mises en avant
+  add_theme_support('custom-background'); // Active les arrière-plans personnalisés
+  add_theme_support('title-tag'); // Active le titre dynamique (plus besoin de le mettre dans le header)
+  add_theme_support('html5', ['search-form', 'comment-form', 'comment-list', 'gallery', 'caption']); // Active les balises HTML5
+  add_theme_support('customize-selective-refresh-widgets'); // Active la mise à jour des widgets en direct
+  add_theme_support('menus'); // Active les menus
+  add_theme_support('custom-header'); // Active les en-têtes personnalisés
+  add_theme_support('wp-block-styles'); // Active les styles de blocs
+  add_theme_support('align-wide'); // Active les alignements larges et complets
+  add_theme_support('editor-styles'); // Active les styles de l'éditeur  (Gutenberg)
+  add_theme_support('responsive-embeds'); // Active les vidéos intégrées réactives (Gutenberg)
+  add_theme_support('block-template'); // Active les modèles de blocs (Gutenberg)
+  add_theme_support('widgets-block-editor');
+  add_theme_support('dark-editor-style');
+});
+
 
 // STYLES CSS
 add_action('wp_enqueue_scripts', function () {
   wp_enqueue_style('ocade-minimal', get_template_directory_uri() . '/style.css');
   wp_enqueue_style('ocade-minimal-child', get_stylesheet_directory_uri() . '/style.css');
 });
-
-
-
