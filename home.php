@@ -2,7 +2,7 @@
 
 get_header();
 
-  /** Récupération du CPT 404. */
+  /** Récupération du CPT Actualités. */
   $actualites_query = new WP_Query(array(
     'post_type' => 'actualites',
     'post_status' => 'publish',
