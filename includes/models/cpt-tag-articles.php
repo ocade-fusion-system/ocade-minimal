@@ -4,18 +4,18 @@ namespace OcadeMinimal;
 
 add_action('init', function () {
   $labels = array(
-    'name' => __('Etiquette d\'articles'),
-    'singular_name' => __('Etiquette d\'articles'),
-    'menu_name' => __('Etiquette d\'articles'),
-    'all_items' => __('Etiquettes d\'articles'),
-    'add_new' => __('Ajouter une nouvelle Etiquette d\'articles'),
-    'add_new_item' => __('Ajouter une nouvelle Etiquette d\'articles'),
-    'edit_item' => __('Modifier l\'étiquette d\'articles'),
-    'new_item' => __('Nouvelle étiquette d\'articles'),
-    'view_item' => __('Voir l\'étiquette d\'articles'),
-    'search_items' => __('Rechercher des étiquettes d\'articles'),
-    'not_found' => __('Aucune étiquette d\'articles trouvée'),
-    'not_found_in_trash' => __('Aucune étiquette d\'articles trouvée dans la corbeille'),
+    'name' => __('Catégorie d\'articles'),
+    'singular_name' => __('Catégorie d\'articles'),
+    'menu_name' => __('Catégorie d\'articles'),
+    'all_items' => __('Catégories d\'articles'),
+    'add_new' => __('Ajouter une nouvelle Catégorie d\'articles'),
+    'add_new_item' => __('Ajouter une nouvelle Catégorie d\'articles'),
+    'edit_item' => __('Modifier la catégorie d\'articles'),
+    'new_item' => __('Nouvelle catégorie d\'articles'),
+    'view_item' => __('Voir la catégorie d\'articles'),
+    'search_items' => __('Rechercher des catégories d\'articles'),
+    'not_found' => __('Aucune catégorie d\'articles trouvée'),
+    'not_found_in_trash' => __('Aucune catégorie d\'articles trouvée dans la corbeille'),
   );
 
   $args = [
@@ -40,7 +40,7 @@ add_action('init', function () {
     'can_export' => true, // indique si ce type de contenu peut être exporté en utilisant l'outil d'exportation WordPress. Si cette clé est définie sur true, le type de contenu pourra être exporté.
     'public' => false, // permet d'activer l'interface utilisateur pour ce type de contenu sur le site front-end. Si cette clé est définie sur false, le type de contenu ne sera pas disponible sur le site front-end.
     'max_posts' => 0, // définir le nombre maximum de publications pour ce type de publication personnalisé
-    'menu_position' => 40
+    'menu_position' => 30
   ];
-  register_post_type('tag-articles', $args);
+  register_post_type('categorie-articles', $args);
 });
