@@ -111,7 +111,7 @@ function ocade_process_clear_transients() {
             delete_transient($transient_key);
         }
         wp_redirect(admin_url('update-core.php'));
-        exit;
+        exit; 
     }
 }
 add_action('admin_init', __NAMESPACE__ . '\ocade_process_clear_transients');
