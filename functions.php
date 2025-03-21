@@ -4,6 +4,7 @@
 require_once get_template_directory() . '/includes/models/index.php'; // Page parent Templates
 require_once get_template_directory() . '/includes/models/cpt-header.php'; // Custom Post Type Header
 require_once get_template_directory() . '/includes/models/cpt-actualites.php'; // Custom Post Type Actualites
+require_once get_template_directory() . '/includes/models/cpt-authors.php'; // Custom Post Type Categorie D'articles
 require_once get_template_directory() . '/includes/models/cpt-categorie-articles.php'; // Custom Post Type Categorie D'articles
 require_once get_template_directory() . '/includes/models/cpt-tag-articles.php'; // Custom Post Type Categorie D'articles
 require_once get_template_directory() . '/includes/models/cpt-footer.php'; // Custom Post Type Footer
