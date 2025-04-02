@@ -44,45 +44,39 @@ jobs:
       - name: Create version.txt
         run: echo $VERSION > version.txt
 
-      - name: Setup Node.js with npm cache
+      - name: Setup Node.js with cache
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install clean-css-cli only
+        run: npm ci --omit=dev
 
-      - name: Prepare release build folder
+      - name: Prepare release folder
         run: |
           mkdir release-build
           rsync -a --exclude=".git" --exclude=".github" --exclude="README.md" --exclude="*.zip" ./ release-build/
 
-      - name: Minify all JS and CSS (except style.css header)
-        run: |
-          # Trouver tous les .js
-          find release-build -type f -name "*.js" -exec ./node_modules/.bin/terser "{}" -o "{}" \;
-
-          # Traiter tous les .css sauf style.css
-          find release-build -type f -name "*.css" ! -name "style.css" -exec ./node_modules/.bin/cleancss -o "{}" "{}" \;
-
-      - name: Minify style.css and preserve WordPress header
+      - name: Minify style.css and preserve WP header
         run: |
           STYLE_SRC="style.css"
           STYLE_DEST="release-build/style.css"
 
-          # Extraire l'en-tête WordPress (tout le bloc /** ... */ au début)
+          # Extraire l'en-tête WordPress (/* ... */)
           HEADER=$(sed -n '/^\/\*\*/,/\*\//p' "$STYLE_SRC")
 
-          # Extraire le contenu sans l'en-tête (à partir de la ligne suivant la fermeture du commentaire)
+          # Trouver la ligne de fin de l'en-tête
           START_LINE=$(grep -n '*/' "$STYLE_SRC" | head -n1 | cut -d: -f1)
           BODY_START=$((START_LINE + 1))
+
+          # Extraire le corps (sans l’en-tête)
           tail -n +"$BODY_START" "$STYLE_SRC" > tmp-body.css
 
           # Minifier le corps
           ./node_modules/.bin/cleancss tmp-body.css -o tmp-body.min.css
 
-          # Réassembler en conservant l’en-tête
+          # Réassembler avec l’en-tête
           echo "$HEADER" > "$STYLE_DEST"
           echo "" >> "$STYLE_DEST"
           cat tmp-body.min.css >> "$STYLE_DEST"
