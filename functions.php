@@ -13,7 +13,7 @@ require_once get_template_directory() . '/includes/models/cpt-footer.php'; // Cu
 require_once get_template_directory() . '/includes/models/cpt-404.php'; // Custom Post Type 404
 
 // MISE A JOUR
-if ($pagenow === 'update-core.php') require_once get_template_directory() . '/ocade-updater.php';
+if (is_admin()) require_once get_template_directory() . '/ocade-updater.php';
 
 // SUPPORTS
 add_action('after_setup_theme', function () {
