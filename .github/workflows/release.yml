@@ -28,68 +28,60 @@ jobs:
         run: |
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "1.0.0")
           echo "Dernière version : $LAST_TAG"
-
           IFS='.' read -r MAJOR MINOR PATCH <<< "$LAST_TAG"
           PATCH=$((PATCH + 1))
           NEW_VERSION="$MAJOR.$MINOR.$PATCH"
-
           while git rev-parse "refs/tags/$NEW_VERSION" >/dev/null 2>&1; do
             PATCH=$((PATCH + 1))
             NEW_VERSION="$MAJOR.$MINOR.$PATCH"
           done
-
-          echo "Nouvelle version : $NEW_VERSION"
           echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      - name: Update Version in style.css (original)
+        run: |
+          sed -i "s/\(Version:\s*\)[0-9.]*/\1$VERSION/" style.css
+          cat style.css
 
       - name: Create version.txt
         run: echo $VERSION > version.txt
 
-      - name: Prepare Release Folder with Minified Files
+      - name: Setup Node.js with cache
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install minifiers
+        run: npm install clean-css-cli terser
+
+      - name: Prepare release build
         run: |
-          mkdir release
-          rsync -av --exclude='.git' --exclude='.github' --exclude='*.zip' --exclude='README.md' ./ release/
+          mkdir release-build
+          rsync -a --exclude=".git" --exclude=".github" --exclude="README.md" --exclude="*.zip" ./ release-build/
 
-          echo "Minifying all .js and .css files..."
-
-          find release -type f \( -name "*.js" -o -name "*.css" \) | while read -r file; do
-            if [[ "$(basename "$file")" == "style.css" ]]; then
-              # Extraire l'en-tête WordPress
-              HEADER=$(awk '/\/\*/{flag=1} flag; /\*\//{flag=0}' "$file" | sed '/^\s*$/d')
-
-              # Mettre à jour la version dans l'en-tête
-              HEADER=$(echo "$HEADER" | sed "s/\(Version:\s*\)[0-9.]*/\1$VERSION/")
-
-              # Extraire et minifier le corps CSS
-              BODY=$(awk 'BEGIN{found=0} /\*\//{found=1; next} found' "$file" | tr -d '\n' | sed 's/  */ /g; s/ *{ */{/g; s/ *} */}/g; s/ *; */;/g; s/ *: */:/g')
-
-              echo -e "$HEADER\n$BODY" > "$file"
-            else
-              # Minification simple pour tous les autres fichiers CSS/JS
-              tr -d '\n' < "$file" | sed 's/  */ /g; s/ *{ */{/g; s/ *} */}/g; s/ *; */;/g; s/ *: */:/g' > "$file.tmp"
-              mv "$file.tmp" "$file"
-            fi
-          done
-
-      - name: Update Version in source style.css
+      - name: Minify JS and CSS (except style.css)
         run: |
-          echo "Avant modification dans le dépôt :"
-          cat style.css
+          find release-build -type f -name "*.js" -exec npx terser "{}" -o "{}" \;
+          find release-build -type f -name "*.css" ! -name "style.css" -exec npx cleancss -o "{}" "{}" \;
 
-          sed -i "s/\(Version:\s*\)[0-9.]*/\1$VERSION/" style.css
-
-          echo "Après modification dans le dépôt :"
-          cat style.css
+      - name: Minify style.css with header preserved
+        run: |
+          STYLE="release-build/style.css"
+          HEADER=$(sed -n '/\/\*/,/\*\//p' style.css)
+          CONTENT=$(npx cleancss style.css | sed '1,/\/\*/d')
+          echo "$HEADER" > $STYLE
+          echo "$CONTENT" >> $STYLE
 
       - name: Create Theme ZIP
         run: |
-          cd release
+          cd release-build
           zip -r ../ocade-minimal.zip * .[^.]*
 
       - name: Commit Changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add version.txt
+          git add style.css version.txt
           git commit -m "Update version to $VERSION" || echo "No changes to commit"
           git push origin master
 
