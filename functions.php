@@ -1,5 +1,7 @@
 <?php
 
+global $pagenow; // Page actuelle
+
 // TEMPLATES
 require_once get_template_directory() . '/includes/models/index.php'; // Page parent Templates
 require_once get_template_directory() . '/includes/models/cpt-header.php'; // Custom Post Type Header
@@ -11,7 +13,7 @@ require_once get_template_directory() . '/includes/models/cpt-footer.php'; // Cu
 require_once get_template_directory() . '/includes/models/cpt-404.php'; // Custom Post Type 404
 
 // MISE A JOUR
-if (is_admin()) require_once get_template_directory() . '/ocade-updater.php';
+if ($pagenow === 'update-core.php') require_once get_template_directory() . '/ocade-updater.php';
 
 // SUPPORTS
 add_action('after_setup_theme', function () {
