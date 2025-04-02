@@ -58,18 +58,34 @@ jobs:
           mkdir release-build
           rsync -a --exclude=".git" --exclude=".github" --exclude="README.md" --exclude="*.zip" ./ release-build/
 
-      - name: Minify JS and CSS (except style.css)
+      - name: Minify all JS and CSS (except style.css header)
         run: |
+          # Trouver tous les .js
           find release-build -type f -name "*.js" -exec ./node_modules/.bin/terser "{}" -o "{}" \;
+
+          # Traiter tous les .css sauf style.css
           find release-build -type f -name "*.css" ! -name "style.css" -exec ./node_modules/.bin/cleancss -o "{}" "{}" \;
 
-      - name: Minify style.css with preserved header
+      - name: Minify style.css and preserve WordPress header
         run: |
-          STYLE="release-build/style.css"
-          HEADER=$(sed -n '/\/\*/,/\*\//p' style.css)
-          MINIFIED=$(./node_modules/.bin/cleancss style.css | sed '1,/\/\*/d')
-          echo "$HEADER" > $STYLE
-          echo "$MINIFIED" >> $STYLE
+          STYLE_SRC="style.css"
+          STYLE_DEST="release-build/style.css"
+
+          # Extraire l'en-tête WordPress (tout le bloc /** ... */ au début)
+          HEADER=$(sed -n '/^\/\*\*/,/\*\//p' "$STYLE_SRC")
+
+          # Extraire le contenu sans l'en-tête (à partir de la ligne suivant la fermeture du commentaire)
+          START_LINE=$(grep -n '*/' "$STYLE_SRC" | head -n1 | cut -d: -f1)
+          BODY_START=$((START_LINE + 1))
+          tail -n +"$BODY_START" "$STYLE_SRC" > tmp-body.css
+
+          # Minifier le corps
+          ./node_modules/.bin/cleancss tmp-body.css -o tmp-body.min.css
+
+          # Réassembler en conservant l’en-tête
+          echo "$HEADER" > "$STYLE_DEST"
+          echo "" >> "$STYLE_DEST"
+          cat tmp-body.min.css >> "$STYLE_DEST"
 
       - name: Create Theme ZIP
         run: |
