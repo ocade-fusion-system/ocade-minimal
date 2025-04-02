@@ -27,7 +27,6 @@ jobs:
         id: get_version
         run: |
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "1.0.0")
-          echo "Dernière version : $LAST_TAG"
           IFS='.' read -r MAJOR MINOR PATCH <<< "$LAST_TAG"
           PATCH=$((PATCH + 1))
           NEW_VERSION="$MAJOR.$MINOR.$PATCH"
@@ -45,32 +44,32 @@ jobs:
       - name: Create version.txt
         run: echo $VERSION > version.txt
 
-      - name: Setup Node.js with cache
+      - name: Setup Node.js with npm cache
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
 
-      - name: Install minifiers
-        run: npm install clean-css-cli terser
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Prepare release build
+      - name: Prepare release build folder
         run: |
           mkdir release-build
           rsync -a --exclude=".git" --exclude=".github" --exclude="README.md" --exclude="*.zip" ./ release-build/
 
       - name: Minify JS and CSS (except style.css)
         run: |
-          find release-build -type f -name "*.js" -exec npx terser "{}" -o "{}" \;
-          find release-build -type f -name "*.css" ! -name "style.css" -exec npx cleancss -o "{}" "{}" \;
+          find release-build -type f -name "*.js" -exec ./node_modules/.bin/terser "{}" -o "{}" \;
+          find release-build -type f -name "*.css" ! -name "style.css" -exec ./node_modules/.bin/cleancss -o "{}" "{}" \;
 
-      - name: Minify style.css with header preserved
+      - name: Minify style.css with preserved header
         run: |
           STYLE="release-build/style.css"
           HEADER=$(sed -n '/\/\*/,/\*\//p' style.css)
-          CONTENT=$(npx cleancss style.css | sed '1,/\/\*/d')
+          MINIFIED=$(./node_modules/.bin/cleancss style.css | sed '1,/\/\*/d')
           echo "$HEADER" > $STYLE
-          echo "$CONTENT" >> $STYLE
+          echo "$MINIFIED" >> $STYLE
 
       - name: Create Theme ZIP
         run: |
