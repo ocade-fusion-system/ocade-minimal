@@ -41,16 +41,6 @@ jobs:
           echo "Nouvelle version : $NEW_VERSION"
           echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
-      - name: Update Version in style.css
-        run: |
-          echo "Avant modification :"
-          cat style.css
-
-          sed -i "s/\(Version:\s*\)[0-9.]*/\1$VERSION/" style.css
-
-          echo "Après modification :"
-          cat style.css
-
       - name: Create version.txt
         run: echo $VERSION > version.txt
 
@@ -63,10 +53,15 @@ jobs:
 
           find release -type f \( -name "*.js" -o -name "*.css" \) | while read -r file; do
             if [[ "$(basename "$file")" == "style.css" ]]; then
-              # Extraire les commentaires WordPress en haut de style.css
-              HEADER=$(sed -n '/\/\*/,/\*\//p' "$file")
-              # Minifier le reste du CSS
-              BODY=$(sed '1,/\/\*\*\//d' "$file" | tr -d '\n' | sed 's/  */ /g' | sed 's/ *{ */{/g; s/ *} */}/g; s/ *; */;/g; s/ *: */:/g')
+              # Extraire l'en-tête WordPress
+              HEADER=$(awk '/\/\*/{flag=1} flag; /\*\//{flag=0}' "$file" | sed '/^\s*$/d')
+
+              # Mettre à jour la version dans l'en-tête
+              HEADER=$(echo "$HEADER" | sed "s/\(Version:\s*\)[0-9.]*/\1$VERSION/")
+
+              # Extraire et minifier le corps CSS
+              BODY=$(awk 'BEGIN{found=0} /\*\//{found=1; next} found' "$file" | tr -d '\n' | sed 's/  */ /g; s/ *{ */{/g; s/ *} */}/g; s/ *; */;/g; s/ *: */:/g')
+
               echo -e "$HEADER\n$BODY" > "$file"
             else
               # Minification simple pour tous les autres fichiers CSS/JS
@@ -84,7 +79,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add style.css version.txt
+          git add version.txt
           git commit -m "Update version to $VERSION" || echo "No changes to commit"
           git push origin master
 
