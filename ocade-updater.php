@@ -109,7 +109,7 @@ function ocade_process_clear_transients() {
         foreach ($transient_names as $transient_name) {
             $transient_key = str_replace('_transient_', '', $transient_name);
             delete_transient($transient_key);
-        }
+        } 
         wp_redirect(admin_url('update-core.php'));
         exit; 
     }
