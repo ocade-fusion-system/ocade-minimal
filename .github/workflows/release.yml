@@ -70,6 +70,16 @@ jobs:
             fi
           done
 
+      - name: Update Version in source style.css
+        run: |
+          echo "Avant modification dans le dépôt :"
+          cat style.css
+
+          sed -i "s/\(Version:\s*\)[0-9.]*/\1$VERSION/" style.css
+
+          echo "Après modification dans le dépôt :"
+          cat style.css
+
       - name: Create Theme ZIP
         run: |
           cd release
