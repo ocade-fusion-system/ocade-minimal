@@ -8,6 +8,7 @@ require_once get_template_directory() . '/includes/models/cpt-header.php'; // Cu
 require_once get_template_directory() . '/includes/models/cpt-actualites.php'; // Custom Post Type Actualites
 require_once get_template_directory() . '/includes/models/cpt-authors.php'; // Custom Post Type Categorie D'articles
 require_once get_template_directory() . '/includes/models/cpt-categorie-articles.php'; // Custom Post Type Categorie D'articles
+require_once get_template_directory() . '/includes/models/cpt-maintenance.php'; // Custom Post Type Maintenance
 require_once get_template_directory() . '/includes/models/cpt-tag-articles.php'; // Custom Post Type Categorie D'articles
 require_once get_template_directory() . '/includes/models/cpt-footer.php'; // Custom Post Type Footer
 require_once get_template_directory() . '/includes/models/cpt-404.php'; // Custom Post Type 404
