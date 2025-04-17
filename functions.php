@@ -40,6 +40,18 @@ add_action('after_setup_theme', function () {
 
 // STYLES CSS
 add_action('wp_enqueue_scripts', function () {
-  wp_enqueue_style('ocade-minimal', get_template_directory_uri() . '/style.css');
-  wp_enqueue_style('ocade-minimal-child', get_stylesheet_directory_uri() . '/style.css');
+  // Style parent avec version dynamique
+  wp_enqueue_style(
+    'ocade-minimal',
+    get_template_directory_uri() . '/style.css',
+    [],
+    filemtime(get_template_directory() . '/style.css')
+  );
+  // Style enfant avec version dynamique, dépendant du parent
+  wp_enqueue_style(
+    'ocade-minimal-child',
+    get_stylesheet_directory_uri() . '/style.css',
+    ['ocade-minimal'],
+    filemtime(get_stylesheet_directory() . '/style.css')
+  );
 });
