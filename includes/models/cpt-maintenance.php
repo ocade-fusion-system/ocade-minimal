@@ -4,18 +4,18 @@ namespace OcadeMinimal;
 
 add_action('init', function () {
   $labels = array(
-    'name' => __('Auteur'),
-    'singular_name' => __('Auteur'),
-    'menu_name' => __('Auteur'),
-    'all_items' => __('Auteur'),
-    'add_new' => __('Ajouter un nouvel Auteur'),
-    'add_new_item' => __('Ajouter un nouvel Auteur'),
-    'edit_item' => __('Modifier Auteur'),
-    'new_item' => __('Nouvel Auteur'),
-    'view_item' => __('Voir Auteur'),
-    'search_items' => __('Rechercher des Auteurs'),
-    'not_found' => __('Aucun Auteur trouvé'),
-    'not_found_in_trash' => __('Aucun Auteur trouvé dans la corbeille'),
+    'name' => __('Maintenance'),
+    'singular_name' => __('Maintenance'),
+    'menu_name' => __('Maintenance'),
+    'all_items' => __('Maintenance'),
+    'add_new' => __('Ajouter une nouvelle Maintenance'),
+    'add_new_item' => __('Ajouter une nouvelle Maintenance'),
+    'edit_item' => __('Modifier la Maintenance'),
+    'new_item' => __('Nouvelle Maintenance'),
+    'view_item' => __('Voir la Maintenance'),
+    'search_items' => __('Rechercher des Maintenance'),
+    'not_found' => __('Aucun Maintenance trouvé'),
+    'not_found_in_trash' => __('Aucun Maintenance trouvé dans la corbeille'),
   );
 
   $args = [
@@ -42,5 +42,5 @@ add_action('init', function () {
     'max_posts' => 0, // définir le nombre maximum de publications pour ce type de publication personnalisé
     'menu_position' => 40
   ];
-  register_post_type('authors', $args);
+  register_post_type('maintenance', $args);
 });
